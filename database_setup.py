@@ -56,8 +56,7 @@ class MenuItem(Base):
            'course'         : self.course,
        }
 
-
-engine = create_engine('sqlite:///restaurantmenuwithusers.db')
- 
+####### Nao esquecer de mudar a senha do data base aqui.
+engine = create_engine('mysql://root:oigalera8458@localhost/restaurant')
 
 Base.metadata.create_all(engine)
