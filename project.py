@@ -15,9 +15,11 @@ import requests
 
 app = Flask(__name__)
 
-path_clientsecret = os.path.abspath('client_secrets.json') 
+app_path = '/var/www/restaurant_py/'
 
-j = open('/var/www/restaurant_py/client_secrets.json', 'r')
+os.chdir(app_path)
+
+j = open('client_secrets.json', 'r')
 
 CLIENT_ID = json.loads(j.read())['web']['client_id']
 
