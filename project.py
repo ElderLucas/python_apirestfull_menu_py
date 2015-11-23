@@ -1,11 +1,33 @@
-from flask import Flask
+from flask import Flask, render_template, request, redirect, jsonify, url_for, flash
+from sqlalchemy import create_engine, asc
+from sqlalchemy.orm import sessionmaker
+from database_setup import Base, Restaurant, MenuItem, User
+from flask import session as login_session
+import random
+import string
+from oauth2client.client import flow_from_clientsecrets
+from oauth2client.client import FlowExchangeError
+import httplib2
+import json
+from flask import make_response
+import requests
 
 app = Flask(__name__)
 
 # Create anti-forgery state token
 @app.route('/login')
 def showLogin():
-	return "I'm in login ASS ELDER LUCAS"
+    state = ''.join(random.choice(string.ascii_uppercase + string.digits)
+                    for x in xrange(32))
+
+    STATE = state
+
+    login_session['state'] = state
+    # return "The current session state is %s" % login_session['state']
+    print "Login"
+    print login_session['state']
+    print STATE
+    return render_template('login.html', STATE=state)
 
 # Facebook CONNECT - Get a current user's token and perfomr a login_session
 @app.route('/fbconnect', methods=['POST'])
