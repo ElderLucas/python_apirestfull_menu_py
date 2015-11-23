@@ -86,7 +86,7 @@ def restaurantsJSON():
 @app.route('/')
 @app.route('/restaurant/')
 def showRestaurants():
-	return render_template('restaurants.html', restaurants=restaurants) 
+	return "Show all restaurants"
 
 # Create a new restaurant
 @app.route('/restaurant/new/', methods=['GET', 'POST'])
