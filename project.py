@@ -17,7 +17,7 @@ app = Flask(__name__)
 
 path_clientsecret = os.path.abspath('client_secrets.json') 
 
-j = open(path_clientsecret, 'r')
+j = open('/var/www/restaurant_py/client_secrets.json', 'r')
 
 CLIENT_ID = json.loads(j.read())['web']['client_id']
 
