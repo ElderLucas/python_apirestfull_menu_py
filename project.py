@@ -23,9 +23,7 @@ session = DBSession()
 
 DEBUG_ALL = True
 
-
-
-app_path = '/var/www/restaurant_py/'
+app_path = os.getcwd()
 
 os.chdir(app_path)
 
@@ -132,7 +130,7 @@ def showMenu(restaurant_id):
     creator = getUserInfo(restaurant.user_id)
     items = session.query(MenuItem).filter_by(restaurant_id=restaurant_id).all()
 
-    if 'email' not in login_session
+    if 'email' not in login_session:
     	current_user_id = getUserID(login_session['email'])
     else:
     	return "Restaurant Menu Error"
