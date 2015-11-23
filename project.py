@@ -182,6 +182,56 @@ def disconnect():
 	return "Disconnect based on provider"
 
 
+# User Helper Functions
+def createUser(login_session):
+    newUser = User(name=login_session['username'], email=login_session['email'], picture=login_session['picture'])
+    session.add(newUser)
+    session.commit()
+    user = session.query(User).filter_by(email=login_session['email']).one()
+    return user.id
+
+def getUserInfo(user_id):
+    user = session.query(User).filter_by(id=user_id).one()
+    return user
+
+def getUserID(email):
+    try:
+        user = session.query(User).filter_by(email=email).one()
+        print "getUserID OK"
+        print user.id
+        return user.id
+        
+    except:
+        print "getUserID NONE"
+        return None
+
+
+# Disconnect based on provider
+@app.route('/disconnect')
+def disconnect():
+    if 'provider' in login_session:
+        if login_session['provider'] == 'google':
+            gdisconnect()
+            del login_session['gplus_id']
+            del login_session['credentials']
+        if login_session['provider'] == 'facebook':
+            fbdisconnect()
+            del login_session['facebook_id']
+        del login_session['username']
+        del login_session['email']
+        del login_session['picture']
+        del login_session['user_id']
+        del login_session['provider']
+        flash("You have successfully been logged out.")
+        return redirect(url_for('showRestaurants'))
+    else:
+        flash("You were not logged in")
+        return redirect(url_for('showRestaurants'))
+
+
+
+
+
 if __name__ == '__main__':
     app.secret_key = 'super_secret_key'
     #app.debug = True
