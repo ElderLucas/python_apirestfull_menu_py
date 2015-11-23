@@ -176,11 +176,6 @@ def editMenuItem(restaurant_id, menu_id):
 def deleteMenuItem(restaurant_id, menu_id):
 	return "Delete a menu item"
 
-# Disconnect based on provider
-@app.route('/disconnect')
-def disconnect():
-	return "Disconnect based on provider"
-
 
 # User Helper Functions
 def createUser(login_session):
@@ -227,8 +222,6 @@ def disconnect():
     else:
         flash("You were not logged in")
         return redirect(url_for('showRestaurants'))
-
-
 
 
 
