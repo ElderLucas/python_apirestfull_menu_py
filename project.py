@@ -123,7 +123,43 @@ def deleteRestaurant(restaurant_id):
 @app.route('/restaurant/<int:restaurant_id>/')
 @app.route('/restaurant/<int:restaurant_id>/menu/')
 def showMenu(restaurant_id):
-	return "Show a restaurant menu"
+
+    if DEBUG_ALL is True: 
+        print "################################################################"
+        print "SHOWING ALL MENU ITEMS"
+
+    restaurant = session.query(Restaurant).filter_by(id=restaurant_id).one()
+    creator = getUserInfo(restaurant.user_id)
+    items = session.query(MenuItem).filter_by(restaurant_id=restaurant_id).all()
+
+    current_user_id = getUserID(login_session['email'])
+
+    if DEBUG_ALL is True: 
+        print "Restaurant: ---->"
+        print restaurant.name
+        print "Restaurant USER ID: ---->"
+        print restaurant.user_id
+        print "Criador desse Menu: ---->"
+        print creator.id
+        print creator.name
+        print creator.email
+        print "################################################################"
+
+    if 'username' not in login_session or creator.id != current_user_id:
+        print "Public restaurant/"
+        return render_template('publicmenu.html', items=items, restaurant=restaurant, creator=creator)
+    else:
+        print "Ok, im a owner of this menu item"     
+        if DEBUG_ALL is True: 
+            print "################################################################"
+            print "My Current User id...."
+            print current_user_id
+            print "Email of User Owner of this :"
+            print login_session['email']
+            print "################################################################"
+
+        return render_template('menu.html', items=items, restaurant=restaurant, creator=creator)
+
 
 # Create a new menu item
 @app.route('/restaurant/<int:restaurant_id>/menu/new/', methods=['GET', 'POST'])
