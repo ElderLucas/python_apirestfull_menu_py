@@ -132,7 +132,10 @@ def showMenu(restaurant_id):
     creator = getUserInfo(restaurant.user_id)
     items = session.query(MenuItem).filter_by(restaurant_id=restaurant_id).all()
 
-    current_user_id = getUserID(login_session['email'])
+    if 'email' not in login_session
+    	current_user_id = getUserID(login_session['email'])
+    else:
+    	return "Restaurant Menu Error"
 
     if DEBUG_ALL is True: 
         print "Restaurant: ---->"
