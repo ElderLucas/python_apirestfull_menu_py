@@ -86,19 +86,7 @@ def restaurantsJSON():
 @app.route('/')
 @app.route('/restaurant/')
 def showRestaurants():
-    if DEBUG_ALL is True: 
-        print "################################################################"
-        print "SHOWING ALL RESTAURANT"
-
-    restaurants = session.query(Restaurant).order_by(asc(Restaurant.name))
-    print "Query"
-
-    if 'username' not in login_session:
-        print "Public restaurant/"
-        return render_template('publicrestaurants.html', restaurants=restaurants)
-    else:
-        print "restaurant/"
-        return render_template('restaurants.html', restaurants=restaurants) 
+	return render_template('restaurants.html', restaurants=restaurants) 
 
 # Create a new restaurant
 @app.route('/restaurant/new/', methods=['GET', 'POST'])
