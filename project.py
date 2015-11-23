@@ -2,10 +2,6 @@ from flask import Flask
 
 app = Flask(__name__)
 
-@app.route('/')
-def hello():
-    return "Hello, I Love Digital Ocean!!!!"
-
 # Create anti-forgery state token
 @app.route('/login')
 def showLogin():
