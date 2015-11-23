@@ -14,22 +14,6 @@ import requests
 
 app = Flask(__name__)
 
-CLIENT_ID = json.loads(
-    open('client_secrets.json', 'r').read())['web']['client_id']
-APPLICATION_NAME = "Restaurant Menu Application"
-
-
-# Connect to Database and create database session
-#engine = create_engine('mysql://root:oigalera8458@localhost/restaurant')
-
-#Base.metadata.bind = engine
-#DBSession = sessionmaker(bind=engine)
-#session = DBSession()
-
-#DEBUG_ALL = True
-
-
-
 # Create anti-forgery state token
 @app.route('/login')
 def showLogin():
