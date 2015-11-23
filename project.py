@@ -8,13 +8,14 @@ import string
 from oauth2client.client import flow_from_clientsecrets
 from oauth2client.client import FlowExchangeError
 import httplib2
-import json
+
 from flask import make_response
 import requests
 
 app = Flask(__name__)
 
 
+import json
 CLIENT_ID = json.loads(open('client_secrets.json','r').read())['web']['client_id']
 APPLICATION_NAME = "Restaurant Menu Application"
 
