@@ -14,10 +14,19 @@ import requests
 
 app = Flask(__name__)
 
-
 CLIENT_ID = json.loads(
     open('client_secrets.json', 'r').read())['web']['client_id']
 APPLICATION_NAME = "Restaurant Menu Application"
+
+
+# Connect to Database and create database session
+engine = create_engine('mysql://root:oigalera8458@localhost/restaurant')
+
+Base.metadata.bind = engine
+DBSession = sessionmaker(bind=engine)
+session = DBSession()
+
+DEBUG_ALL = True
 
 
 
@@ -77,7 +86,19 @@ def restaurantsJSON():
 @app.route('/')
 @app.route('/restaurant/')
 def showRestaurants():
-	return "Show all restaurants"
+    if DEBUG_ALL is True: 
+        print "################################################################"
+        print "SHOWING ALL RESTAURANT"
+
+    restaurants = session.query(Restaurant).order_by(asc(Restaurant.name))
+    print "Query"
+
+    if 'username' not in login_session:
+        print "Public restaurant/"
+        return render_template('publicrestaurants.html', restaurants=restaurants)
+    else:
+        print "restaurant/"
+        return render_template('restaurants.html', restaurants=restaurants) 
 
 # Create a new restaurant
 @app.route('/restaurant/new/', methods=['GET', 'POST'])
