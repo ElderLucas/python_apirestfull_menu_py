@@ -15,6 +15,16 @@ import requests
 
 app = Flask(__name__)
 
+# Connect to Database and create database session
+engine = create_engine('mysql://root:oigalera8458@localhost/restaurant')
+Base.metadata.bind = engine
+DBSession = sessionmaker(bind=engine)
+session = DBSession()
+
+DEBUG_ALL = True
+
+
+
 app_path = '/var/www/restaurant_py/'
 
 os.chdir(app_path)
