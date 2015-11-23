@@ -8,15 +8,19 @@ import string
 from oauth2client.client import flow_from_clientsecrets
 from oauth2client.client import FlowExchangeError
 import httplib2
-
+import json
+import os
 from flask import make_response
 import requests
 
 app = Flask(__name__)
 
+path_clientsecret = os.path.abspath('client_secrets.json') 
 
-import json
-CLIENT_ID = json.loads(open('client_secrets.json','r').read())['web']['client_id']
+j = open(path_clientsecret, 'r')
+
+CLIENT_ID = json.loads(j.read())['web']['client_id']
+
 APPLICATION_NAME = "Restaurant Menu Application"
 
 # Create anti-forgery state token
