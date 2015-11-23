@@ -5,7 +5,7 @@ app = Flask(__name__)
 # Create anti-forgery state token
 @app.route('/login')
 def showLogin():
-	return "I'm in login"
+	return "I'm in login ASS ELDER LUCAS"
 
 # Facebook CONNECT - Get a current user's token and perfomr a login_session
 @app.route('/fbconnect', methods=['POST'])
