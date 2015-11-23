@@ -20,13 +20,13 @@ APPLICATION_NAME = "Restaurant Menu Application"
 
 
 # Connect to Database and create database session
-engine = create_engine('mysql://root:oigalera8458@localhost/restaurant')
+#engine = create_engine('mysql://root:oigalera8458@localhost/restaurant')
 
-Base.metadata.bind = engine
-DBSession = sessionmaker(bind=engine)
-session = DBSession()
+#Base.metadata.bind = engine
+#DBSession = sessionmaker(bind=engine)
+#session = DBSession()
 
-DEBUG_ALL = True
+#DEBUG_ALL = True
 
 
 
