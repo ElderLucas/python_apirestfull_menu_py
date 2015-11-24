@@ -27,9 +27,13 @@ app_path = os.getcwd()
 
 os.chdir(app_path)
 
-j = open('client_secrets.json', 'r')
 
-CLIENT_ID = json.loads(j.read())['web']['client_id']
+if ((os.path.isfile('client_secrets.json'))== True):
+	opened_file = open('client_secrets.json', 'r')
+else:
+	opened_file = open('/var/www/restaurant_py/client_secrets.json', 'r')
+
+CLIENT_ID = json.loads(opened_file.read())['web']['client_id']
 
 APPLICATION_NAME = "Restaurant Menu Application"
 
