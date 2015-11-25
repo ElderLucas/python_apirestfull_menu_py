@@ -141,7 +141,7 @@ def gconnect():
     answer = requests.get(userinfo_url, params=params)
 
     data = answer.json()
-
+    login_session['provider'] = 'google'
     login_session['username'] = data['name']
     login_session['picture'] = data['picture']
     login_session['email'] = data['email']
@@ -187,7 +187,46 @@ def gconnect():
 # DISCONNECT - Revoke a current user's token and reset their login_session
 @app.route('/gdisconnect')
 def gdisconnect():
-    return "Ok, Google Connect is Over"
+    access_token = login_session['access_token']
+
+
+    if DEBUG_ALL is True: 
+        print "################################################################"
+        print "DESCONECTANDO + x + x + x + x + x + x + x + x + x + x + x + x + "
+
+    print 'In gdisconnect access token is %s', access_token
+    print 'User name is: ' 
+    print login_session['username']
+
+    if access_token is None:
+        print 'Access Token is None'
+        response = make_response(json.dumps('Current user not connected.'), 401)
+        response.headers['Content-Type'] = 'application/json'
+        return response
+
+    url = 'https://accounts.google.com/o/oauth2/revoke?token=%s' % login_session['access_token']
+    h = httplib2.Http()
+    result = h.request(url, 'GET')[0]
+    print 'result is '
+    print result
+
+    if result['status'] == '200':
+        del login_session['access_token'] 
+        del login_session['gplus_id']
+        del login_session['username']
+        del login_session['email']
+        del login_session['picture']
+        del login_session['user_id']
+        login_session['current_status'] = "disconnected"
+        print "Current Status : "
+        print login_session['current_status']
+        response = make_response(json.dumps('Successfully disconnected.'), 200)
+        response.headers['Content-Type'] = 'application/json'
+        return response
+    else:
+        response = make_response(json.dumps('Failed to revoke token for given user.', 400))
+        response.headers['Content-Type'] = 'application/json'
+        return response
 
 # Restaurant URLs
 
@@ -226,41 +265,97 @@ def showRestaurants():
 # Create a new restaurant
 @app.route('/restaurant/new/', methods=['GET', 'POST'])
 def newRestaurant():
-	return "Create a new restaurant"
+
+    if DEBUG_ALL is True: 
+        print "################################################################"
+        print "CREATING A NEW RESTURANT"
+           
+    if 'username' not in login_session:
+        return redirect('/login')
+        if DEBUG_ALL is True: 
+            print "Goshhh ... Im not Logged in"
+            print "################################################################"
+            
+    if request.method == 'POST':
+        if DEBUG_ALL is True: 
+            print "****************************************************************"
+            print "O Nome do Retaurant que sera criado:-------->"
+            print request.form['name']
+            print "Dados do usuario Current"
+            print "USER ID -->>>> "
+            print login_session['user_id']
+            print "USER NAME -->>>> "
+            print login_session['username']
+            print "EMAIL -->>>> "
+            print login_session['email']
+            print "PICTURED -->>>> "
+            print login_session['picture']
+            print "################################################################"
+
+        newRestaurant = Restaurant(name=request.form['name'], user_id = login_session['user_id'])
+        session.add(newRestaurant)
+        flash('New Restaurant %s Successfully Created' % newRestaurant.name)
+        session.commit()
+        return redirect(url_for('showRestaurants'))
+    else:
+        print "newRestaurant"
+        return render_template('newRestaurant.html')
 
 # Edit a restaurant
 @app.route('/restaurant/<int:restaurant_id>/edit/', methods=['GET', 'POST'])
 def editRestaurant(restaurant_id):
-	return "Edit a restaurant"
+
+    editedRestaurant = session.query(Restaurant).filter_by(id=restaurant_id).one()
+
+    if 'username' not in login_session:
+        return redirect('/login')
+
+    if editedRestaurant.user_id != login_session['user_id']:
+        return "<script>function myFunction() {alert('You are not authorized to edit this restaurant. Please create your own restaurant in order to edit.');}</script><body onload='myFunction()''>"
+
+    if request.method == 'POST':
+        if request.form['name']:
+            editedRestaurant.name = request.form['name']
+            flash('Restaurant Successfully Edited %s' % editedRestaurant.name)
+            return redirect(url_for('showRestaurants'))
+    else:
+        return render_template('editRestaurant.html', restaurant=editedRestaurant)
+
 
 # Delete a restaurant
 @app.route('/restaurant/<int:restaurant_id>/delete/', methods=['GET', 'POST'])
 def deleteRestaurant(restaurant_id):
-	return "Delete a restaurant"
+
+    restaurantToDelete = session.query(Restaurant).filter_by(id=restaurant_id).one()
+
+    if 'username' not in login_session:
+        return redirect('/login')
+
+    if restaurantToDelete.user_id != login_session['user_id']:
+        return "<script>function myFunction() {alert('You are not authorized to delete this restaurant. Please create your own restaurant in order to delete.');}</script><body onload='myFunction()''>"
+
+    if request.method == 'POST':
+        session.delete(restaurantToDelete)
+        flash('%s Successfully Deleted' % restaurantToDelete.name)
+        session.commit()
+        return redirect(url_for('showRestaurants', restaurant_id=restaurant_id))
+    else:
+        return render_template('deleteRestaurant.html', restaurant=restaurantToDelete)
 
 # Show a restaurant menu
 @app.route('/restaurant/<int:restaurant_id>/')
 @app.route('/restaurant/<int:restaurant_id>/menu/')
 def showMenu(restaurant_id):
 
+    if DEBUG_ALL is True: 
+        print "################################################################"
+        print "SHOWING ALL MENU ITEMS"
+
     restaurant = session.query(Restaurant).filter_by(id=restaurant_id).one()
     creator = getUserInfo(restaurant.user_id)
     items = session.query(MenuItem).filter_by(restaurant_id=restaurant_id).all()
 
-    if 'username' not in login_session:
-        print "Public restaurant/...... User Doesn't Exist"
-        return render_template('publicmenu.html', items=items, restaurant=restaurant, creator=creator)
-    else:
-    	if 'email' in login_session:
-    		print "Verify Email"
-    		current_user_id = getUserID(login_session['email'])
-    		if creator.id == current_user_id:
-    			return render_template('menu.html', items=items, restaurant=restaurant, creator=creator)
-    		else:
-    			return render_template('publicmenu.html', items=items, restaurant=restaurant, creator=creator)
-    	else:
-    		print "Email Error... Is not the Same User"
-    		return render_template('publicmenu.html', items=items, restaurant=restaurant, creator=creator)
+    current_user_id = getUserID(login_session['email'])
 
     if DEBUG_ALL is True: 
         print "Restaurant: ---->"
@@ -271,22 +366,107 @@ def showMenu(restaurant_id):
         print creator.id
         print creator.name
         print creator.email
+        print "################################################################"
+
+    if 'username' not in login_session or creator.id != current_user_id:
+        print "Public restaurant/"
+        return render_template('publicmenu.html', items=items, restaurant=restaurant, creator=creator)
+    else:
+        print "Ok, im a owner of this menu item"     
+        if DEBUG_ALL is True: 
+            print "################################################################"
+            print "My Current User id...."
+            print current_user_id
+            print "Email of User Owner of this :"
+            print login_session['email']
+            print "################################################################"
+
+        return render_template('menu.html', items=items, restaurant=restaurant, creator=creator)
 
 
 # Create a new menu item
 @app.route('/restaurant/<int:restaurant_id>/menu/new/', methods=['GET', 'POST'])
 def newMenuItem(restaurant_id):
-	return "Create a new menu item"
+
+    if 'username' not in login_session:
+        print "There is no one logged"
+        return redirect('/login')
+
+    if 'user_id' not in login_session:
+        print "There is no one logged"
+        return redirect('/login')
+
+    restaurant = session.query(Restaurant).filter_by(id=restaurant_id).one()
+
+    if login_session['user_id'] != restaurant.user_id:
+        return "<script>function myFunction() {alert('You are not authorized to add menu items to this restaurant. Please create your own restaurant in order to add items.');}</script><body onload='myFunction()''>"
+
+    if request.method == 'POST':
+        print "eu entrei"
+        newItem = MenuItem(name=request.form['name'],
+            description=request.form['description'], 
+            price=request.form['price'], 
+            course=request.form['course'],
+            user_id=restaurant.user_id,
+            restaurant_id=restaurant_id)
+        session.add(newItem)
+        print "eu tentei"
+        session.commit()
+        flash('New Menu %s Item Successfully Created' % (newItem.name))
+        return redirect(url_for('showMenu', restaurant_id=restaurant_id))
+    else:
+        return render_template('newmenuitem.html', restaurant_id=restaurant_id)
 
 # Edit a menu item
 @app.route('/restaurant/<int:restaurant_id>/menu/<int:menu_id>/edit', methods=['GET', 'POST'])
 def editMenuItem(restaurant_id, menu_id):
-	return "Edit a menu item"
+
+    if 'username' not in login_session:
+        return redirect('/login')
+
+    editedItem = session.query(MenuItem).filter_by(id=menu_id).one()
+    restaurant = session.query(Restaurant).filter_by(id=restaurant_id).one()
+
+    if login_session['user_id'] != restaurant.user_id:
+        return "<script>function myFunction() {alert('You are not authorized to edit menu items to this restaurant. Please create your own restaurant in order to edit items.');}</script><body onload='myFunction()''>"
+
+    if request.method == 'POST':
+        if request.form['name']:
+            editedItem.name = request.form['name']
+        if request.form['description']:
+            editedItem.description = request.form['description']
+        if request.form['price']:
+            editedItem.price = request.form['price']
+        if request.form['course']:
+            editedItem.course = request.form['course']
+        session.add(editedItem)
+        session.commit()
+        flash('Menu Item Successfully Edited')
+        return redirect(url_for('showMenu', restaurant_id=restaurant_id))
+    else:
+        return render_template('editmenuitem.html', restaurant_id=restaurant_id, menu_id=menu_id, item=editedItem)
+
 
 # Delete a menu item
 @app.route('/restaurant/<int:restaurant_id>/menu/<int:menu_id>/delete', methods=['GET', 'POST'])
 def deleteMenuItem(restaurant_id, menu_id):
-	return "Delete a menu item"
+
+    if 'username' not in login_session:
+        return redirect('/login')
+
+    restaurant = session.query(Restaurant).filter_by(id=restaurant_id).one()
+    itemToDelete = session.query(MenuItem).filter_by(id=menu_id).one()
+
+    if login_session['user_id'] != restaurant.user_id:
+        return "<script>function myFunction() {alert('You are not authorized to delete menu items to this restaurant. Please create your own restaurant in order to delete items.');}</script><body onload='myFunction()''>"
+
+    if request.method == 'POST':
+        session.delete(itemToDelete)
+        session.commit()
+        flash('Menu Item Successfully Deleted')
+        return redirect(url_for('showMenu', restaurant_id=restaurant_id))
+    else:
+        return render_template('deleteMenuItem.html', item=itemToDelete)
 
 
 # User Helper Functions
@@ -317,13 +497,18 @@ def getUserID(email):
 @app.route('/disconnect')
 def disconnect():
     if 'provider' in login_session:
+    	print "Ok Lets Try Loggin Out" 
         if login_session['provider'] == 'google':
-            gdisconnect()
-            del login_session['gplus_id']
-            del login_session['credentials']
+        	print "Google Desconnected"
+        	gdisconnect()
+        	del login_session['gplus_id']
+        	del login_session['credentials']
+
         if login_session['provider'] == 'facebook':
-            fbdisconnect()
-            del login_session['facebook_id']
+        	print "FaceBook Desconnected"
+        	fbdisconnect()
+        	del login_session['facebook_id']
+
         del login_session['username']
         del login_session['email']
         del login_session['picture']
@@ -333,6 +518,7 @@ def disconnect():
         return redirect(url_for('showRestaurants'))
     else:
         flash("You were not logged in")
+        print "Im Not Connected"
         return redirect(url_for('showRestaurants'))
 
 
