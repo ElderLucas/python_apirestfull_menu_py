@@ -272,6 +272,7 @@ def showRestaurants():
 			print restaurn.id
 			print restaurn.name
 			print restaurn.user_id
+			print "\n"
 
         return render_template('restaurants.html', restaurants=restaurants)  
 
@@ -333,6 +334,7 @@ def editRestaurant(restaurant_id):
     if request.method == 'POST':
         if request.form['name']:
             editedRestaurant.name = request.form['name']
+            session.add(editedRestaurant)
             session.commit()
             flash('Restaurant Successfully Edited %s' % editedRestaurant.name)
             return redirect(url_for('showRestaurants'))
