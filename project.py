@@ -251,15 +251,22 @@ def restaurantsJSON():
 def showRestaurants():
     #if DEBUG_ALL is True: 
     #    print "################################################################"
-    #    print "SHOWING ALL RESTAURANT"
+    print "Start Query Restaurant"
     restaurants = session.query(Restaurant).order_by(asc(Restaurant.name))
     print "Query"
 
-    if 'username' not in login_session:
+    # Aqui eu escolhi verificar por meio do um email pelo fato de que somente o email e garantido de existir.
+    if 'email' not in login_session:
         print "Public restaurant/"
         return render_template('publicrestaurants.html', restaurants=restaurants)
     else:
         print "restaurant/"
+
+        for restaurn in restaurants:
+			print restaurn.id
+			print restaurn.name
+			print restaurn.user_id
+
         return render_template('restaurants.html', restaurants=restaurants)  
 
 # Create a new restaurant
@@ -293,9 +300,13 @@ def newRestaurant():
             print "################################################################"
 
         newRestaurant = Restaurant(name=request.form['name'], user_id = login_session['user_id'])
+        print "New REst Query"
         session.add(newRestaurant)
+        print "Session Added"
         flash('New Restaurant %s Successfully Created' % newRestaurant.name)
+        print "Flash"
         session.commit()
+        print "Commit"
         return redirect(url_for('showRestaurants'))
     else:
         print "newRestaurant"
@@ -307,7 +318,7 @@ def editRestaurant(restaurant_id):
 
     editedRestaurant = session.query(Restaurant).filter_by(id=restaurant_id).one()
 
-    if 'username' not in login_session:
+    if 'email' not in login_session:
         return redirect('/login')
 
     if editedRestaurant.user_id != login_session['user_id']:
@@ -328,7 +339,7 @@ def deleteRestaurant(restaurant_id):
 
     restaurantToDelete = session.query(Restaurant).filter_by(id=restaurant_id).one()
 
-    if 'username' not in login_session:
+    if 'email' not in login_session:
         return redirect('/login')
 
     if restaurantToDelete.user_id != login_session['user_id']:
@@ -368,7 +379,7 @@ def showMenu(restaurant_id):
         print creator.email
         print "################################################################"
 
-    if 'username' not in login_session or creator.id != current_user_id:
+    if 'email' not in login_session or creator.id != current_user_id:
         print "Public restaurant/"
         return render_template('publicmenu.html', items=items, restaurant=restaurant, creator=creator)
     else:
@@ -388,11 +399,7 @@ def showMenu(restaurant_id):
 @app.route('/restaurant/<int:restaurant_id>/menu/new/', methods=['GET', 'POST'])
 def newMenuItem(restaurant_id):
 
-    if 'username' not in login_session:
-        print "There is no one logged"
-        return redirect('/login')
-
-    if 'user_id' not in login_session:
+    if 'email' not in login_session:
         print "There is no one logged"
         return redirect('/login')
 
