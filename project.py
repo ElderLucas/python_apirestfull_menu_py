@@ -177,6 +177,14 @@ def gconnect():
         print user_id
         print "################################################################"
 
+    print login_session['access_token']
+    print login_session['gplus_id']
+    print login_session['provider']
+    print login_session['username']
+    print login_session['picture'] 
+    print login_session['email']
+    print login_session['user_id']
+
 
 
     output = ''
@@ -194,7 +202,6 @@ def gconnect():
 @app.route('/gdisconnect')
 def gdisconnect():
     access_token = login_session['access_token']
-
 
     if DEBUG_ALL is True: 
         print "################################################################"
@@ -217,15 +224,6 @@ def gdisconnect():
     print result
 
     if result['status'] == '200':
-        del login_session['access_token'] 
-        del login_session['gplus_id']
-        del login_session['username']
-        del login_session['email']
-        del login_session['picture']
-        del login_session['user_id']
-        login_session['current_status'] = "disconnected"
-        print "Current Status : "
-        print login_session['current_status']
         response = make_response(json.dumps('Successfully disconnected.'), 200)
         response.headers['Content-Type'] = 'application/json'
         return response
@@ -379,8 +377,13 @@ def showMenu(restaurant_id):
     creator = getUserInfo(restaurant.user_id)
     items = session.query(MenuItem).filter_by(restaurant_id=restaurant_id).all()
 
-    current_user_id = getUserID(login_session['email'])
+    #Verificase primeiro se o login esta presente e se o emial esta disponivel... para evitar erros no python
+    if 'email' not in login_session:
+    	current_user_id = None
+    else:
+    	current_user_id = getUserID(login_session['email'])
 
+    print "Got Email"
     if DEBUG_ALL is True: 
         print "Restaurant: ---->"
         print restaurant.name
@@ -516,32 +519,35 @@ def getUserID(email):
 # Disconnect based on provider
 @app.route('/disconnect')
 def disconnect():
-    if 'provider' in login_session:
-    	print "Ok Lets Try Loggin Out" 
-        if login_session['provider'] == 'google':
-        	print "Google Desconnected"
-        	gdisconnect()
-        	del login_session['gplus_id']
-        	del login_session['credentials']
+	print "Casa"
 
-        if login_session['provider'] == 'facebook':
-        	print "FaceBook Desconnected"
-        	fbdisconnect()
-        	del login_session['facebook_id']
+	if "provider" in login_session:
+		if login_session['provider'] == 'google':
+			gdisconnect()
+			flash('Successfully Disconnected from Google')
 
-        del login_session['username']
-        del login_session['email']
-        del login_session['picture']
-        del login_session['user_id']
-        del login_session['provider']
-        flash("You have successfully been logged out.")
-        return redirect(url_for('showRestaurants'))
-    else:
-        flash("You were not logged in")
-        print "Im Not Connected"
-        return redirect(url_for('showRestaurants'))
+			print "Loggin Session ******"
+			print login_session
+			
+			del login_session['access_token']
+			del login_session['gplus_id']
+			del login_session['provider']
+			del login_session['username']
+			del login_session['picture']
+			del login_session['email']
+			del login_session['user_id']
+			print "All Destruido"
+			return redirect(url_for('showRestaurants'))
+
+		elif login_session['provider'] == 'facebook':
+			flash('Successfully Disconnected from Facebook')
+			return redirect(url_for('showRestaurants'))
 
 
+
+	else:
+		flash('You Were not Connected')
+		return redirect(url_for('showRestaurants'))
 
 if __name__ == '__main__':
     app.secret_key = 'super_secret_key'

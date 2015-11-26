@@ -9,7 +9,7 @@
 <script src="//apis.google.com/js/platform.js?onload=start"> </script>
 
 <!-- END PRE-REQUISITES FOR GOOGLE SIGN IN -->
-
+  <link rel="stylesheet" href="bootstrap.min.css">
 
 </head>
 
@@ -112,7 +112,7 @@ function signInCallback(authResult) {
     }
 </script>
 
-<button>
+<button type="button" class="btn btn-primary">
     <fb:login-button scope="public_profile,email" onlogin="sendTokenToServer();">
         <a href='javascript:sendTokenToServer()'>Login with Facebook</a>
         </fb:login-button>
