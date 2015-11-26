@@ -333,6 +333,7 @@ def editRestaurant(restaurant_id):
     if request.method == 'POST':
         if request.form['name']:
             editedRestaurant.name = request.form['name']
+            session.commit()
             flash('Restaurant Successfully Edited %s' % editedRestaurant.name)
             return redirect(url_for('showRestaurants'))
     else:
