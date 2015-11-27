@@ -16,9 +16,9 @@ import os
 from flask import make_response
 import requests
 
-#import sys
-#reload(sys)
-#sys.setdefaultencoding("utf-8")
+import sys
+reload(sys)
+sys.setdefaultencoding("utf-8")
 
 
 app = Flask(__name__)
@@ -36,7 +36,7 @@ os.chdir(app_path)
 
 print "Pão de Quijo \n"
 
-newRestaurant = Restaurant(name='AÁáPOIUYTW´®çµ√ˆƒøßπœ∑´ˆççˆµ˜∫√', user_id = 2)
+newRestaurant = Restaurant(name='AÁáPOIUYTW´®çµ√ˆƒøßπœ∑´ˆççˆµ˜∫√aass', user_id = 2)
 session.add(newRestaurant)
 session.commit()
 

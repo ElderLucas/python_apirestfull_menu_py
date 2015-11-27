@@ -17,6 +17,12 @@ from flask import make_response
 import requests
 
 
+import sys
+reload(sys)
+sys.setdefaultencoding("utf-8")
+
+
+
 app = Flask(__name__)
 
 # an Engine, which the Session will use for connection
