@@ -43,11 +43,12 @@
 </div>
 
 {% for restaurant in restaurants %}
+	{{restaurant.name}}
 		<a href = "{{url_for('showMenu', restaurant_id = restaurant.id)}}">
 			<div class="row">
 				<div class="col-md-1"></div>
 					<div class="col-md-10 restaurant-list">
-						<h3>{{unicode(restaurant.name)}}</h3>
+						<h3>{{restaurant.name}}</h3>
 					</div>
 				<div class="col-md-1"></div>
 			</div>
