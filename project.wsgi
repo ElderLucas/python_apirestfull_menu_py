@@ -2,9 +2,6 @@
 # -*- coding: utf-8 -*-
 import sys
 import logging
-reload(sys)
-sys.setdefaultencoding("utf-8")
-
 
 logging.basicConfig(stream=sys.stderr)
 sys.path.insert(0,"/var/www/restaurant_py/")
