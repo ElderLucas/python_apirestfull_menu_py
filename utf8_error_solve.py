@@ -59,7 +59,7 @@ def debug():
 		print restaurn.name
 		print restaurn.user_id
 
-	return render_template('teste_utf8.html', list=restaurants)
+	return render_template('teste_utf8.html', list='Pão')
 
 if __name__ == '__main__':
     app.secret_key = 'super_secret_key'
