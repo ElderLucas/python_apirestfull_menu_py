@@ -1,3 +1,6 @@
+#!/usr/bin/env python
+# -*- coding: utf-8 -*-
+
 from flask import Flask, render_template, request, redirect, jsonify, url_for, flash
 from sqlalchemy import create_engine, asc
 from sqlalchemy.orm import sessionmaker
@@ -12,6 +15,10 @@ import json
 import os
 from flask import make_response
 import requests
+
+import sys
+reload(sys)
+sys.setdefaultencoding("utf-8")
 
 app = Flask(__name__)
 
@@ -528,7 +535,7 @@ def disconnect():
 
 			print "Loggin Session ******"
 			print login_session
-			
+
 			del login_session['access_token']
 			del login_session['gplus_id']
 			del login_session['provider']

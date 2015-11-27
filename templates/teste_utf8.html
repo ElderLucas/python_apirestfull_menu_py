@@ -1,0 +1,24 @@
+{% extends "main.html" %}
+{% block content %}
+	<div class="row top-menu">
+
+		<div class="col-md-12">
+			<h3>AEIOU</h3>
+		</div>
+	</div>
+
+	<div class="row">
+		<div class="col-md-12">
+			<h3>Pão</h3>
+		</div>
+	</div>
+
+
+	{% for restaurant in list %}
+		<div class="row">
+			<h3>{{restaurant.name}}</h3>
+		</div>
+	{% endfor %}
+
+
+{% endblock %}
