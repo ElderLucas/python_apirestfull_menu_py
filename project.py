@@ -16,6 +16,7 @@ import os
 from flask import make_response
 import requests
 
+
 app = Flask(__name__)
 
 # an Engine, which the Session will use for connection
@@ -57,6 +58,37 @@ CLIENT_ID = json.loads(opened_file.read())['web']['client_id']
 
 
 APPLICATION_NAME = "Restaurant Menu Application"
+
+
+############## LOG ###############
+import logging
+
+# create logger
+logger = logging.getLogger('simple_example')
+logger.setLevel(logging.DEBUG)
+
+# create console handler and set level to debug
+ch = logging.StreamHandler()
+ch.setLevel(logging.DEBUG)
+
+# create formatter
+formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
+
+# add formatter to ch
+ch.setFormatter(formatter)
+
+# add ch to logger
+logger.addHandler(ch)
+
+# 'application' code
+logger.debug('debug message')
+logger.info('info message')
+logger.warn('warn message')
+logger.error('error message')
+logger.critical('critical message')
+
+
+
 
 # Create anti-forgery state token
 @app.route('/login')
@@ -256,26 +288,23 @@ def restaurantsJSON():
 @app.route('/')
 @app.route('/restaurant/')
 def showRestaurants():
-    #if DEBUG_ALL is True: 
-    #    print "################################################################"
-    print "Start Query Restaurant"
-    restaurants = session.query(Restaurant).order_by(asc(Restaurant.name))
-    print "Query"
+
+	logger.info('Show all restaurants')
+	restaurants = session.query(Restaurant).order_by(asc(Restaurant.name))
 
     # Aqui eu escolhi verificar por meio do um email pelo fato de que somente o email e garantido de existir.
-    if 'email' not in login_session:
-        print "Public restaurant/"
-        return render_template('publicrestaurants.html', restaurants=restaurants)
-    else:
-        print "restaurant/"
+	if 'email' not in login_session:
+		print "Public restaurant/"
+		return render_template('publicrestaurants.html', restaurants=restaurants)
+	else:
+		print "restaurant/"
 
-        for restaurn in restaurants:
-			print restaurn.id
-			print restaurn.name
-			print restaurn.user_id
-			print "\n"
+		for restaurn in restaurants:
+			logger.debug(restaurn.id)
+			logger.debug(restaurn.name)
+			logger.debug(restaurn.user_id)
 
-        return render_template('restaurants.html', restaurants=restaurants)  
+		return render_template('restaurants.html', restaurants=restaurants)  
 
 # Create a new restaurant
 @app.route('/restaurant/new/', methods=['GET', 'POST'])
