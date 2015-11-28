@@ -27,7 +27,7 @@ app = Flask(__name__)
 
 # an Engine, which the Session will use for connection
 # resources
-engine = create_engine('mysql://root:oigalera8458@localhost/restaurant')
+engine = create_engine('mysql://root:oigalera8458@localhost/restaurant_v1_0_1')
 
 Base.metadata.bind = engine
 
@@ -340,9 +340,13 @@ def newRestaurant():
             print login_session['email']
             print "PICTURED -->>>> "
             print login_session['picture']
-            print "################################################################"
+			print "################################################################"
 
-        newRestaurant = Restaurant(name=request.form['name'], user_id = login_session['user_id'])
+		# Eh importante Codificar como UNICODE, dado que caso nao seja feito isso,
+		# um erro ocorrera causado pela codificacao utf8 ou ascii
+		my_new_restaurant = unicode(request.form['name'])
+
+		newRestaurant = Restaurant(name=my_new_restaurant, user_id = login_session['user_id'])
         print "New REst Query"
         session.add(newRestaurant)
         print "Session Added"

@@ -50,13 +50,13 @@ class MenuItem(Base):
        """Return object data in easily serializeable format"""
        return {
            'name'         : self.name,
-           'description'         : self.description,
-           'id'         : self.id,
-           'price'         : self.price,
-           'course'         : self.course,
+           'description'  : self.description,
+           'id'           : self.id,
+           'price'        : self.price,
+           'course'       : self.course,
        }
 
 ####### Nao esquecer de mudar a senha do data base aqui.
-engine = create_engine('mysql://root:oigalera8458@localhost/restaurant')
+engine = create_engine('mysql://root:oigalera8458@localhost/restaurant_v1_0_1')
 
 Base.metadata.create_all(engine)
