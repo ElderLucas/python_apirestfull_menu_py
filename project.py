@@ -316,48 +316,28 @@ def showRestaurants():
 @app.route('/restaurant/new/', methods=['GET', 'POST'])
 def newRestaurant():
 
-    if DEBUG_ALL is True: 
-        print "################################################################"
-        print "CREATING A NEW RESTURANT"
-           
-    if 'username' not in login_session:
-        return redirect('/login')
-        if DEBUG_ALL is True: 
-            print "Goshhh ... Im not Logged in"
-            print "################################################################"
-            
-    if request.method == 'POST':
-        if DEBUG_ALL is True: 
-            print "****************************************************************"
-            print "O Nome do Retaurant que sera criado:-------->"
-            print request.form['name']
-            print "Dados do usuario Current"
-            print "USER ID -->>>> "
-            print login_session['user_id']
-            print "USER NAME -->>>> "
-            print login_session['username']
-            print "EMAIL -->>>> "
-            print login_session['email']
-            print "PICTURED -->>>> "
-            print login_session['picture']
-			print "################################################################"
+	if DEBUG_ALL is True: 
+		print "################################################################"
+		print "CREATING A NEW RESTURANT"
 
-		# Eh importante Codificar como UNICODE, dado que caso nao seja feito isso,
-		# um erro ocorrera causado pela codificacao utf8 ou ascii
-		my_new_restaurant = unicode(request.form['name'])
-
-		newRestaurant = Restaurant(name=my_new_restaurant, user_id = login_session['user_id'])
-        print "New REst Query"
-        session.add(newRestaurant)
-        print "Session Added"
-        flash('New Restaurant %s Successfully Created' % newRestaurant.name)
-        print "Flash"
-        session.commit()
-        print "Commit"
-        return redirect(url_for('showRestaurants'))
-    else:
-        print "newRestaurant"
-        return render_template('newRestaurant.html')
+	if 'username' not in login_session:
+		return redirect('/login')
+		
+	if request.method == 'POST':
+		my_new_rest = unicode(request.form['name'])
+		newRestaurant = Restaurant(name=my_new_rest, user_id = login_session['user_id'])
+		print "New REst Query"
+		session.add(newRestaurant)
+		print "Session Added"
+		flash('New Restaurant %s Successfully Created' % newRestaurant.name)
+		print "Flash"
+		session.commit()
+		print "Commit"
+		return redirect(url_for('showRestaurants'))
+	else:
+		print "Pna"
+		print "newRestaurant"
+		return render_template('newRestaurant.html')
 
 # Edit a restaurant
 @app.route('/restaurant/<int:restaurant_id>/edit/', methods=['GET', 'POST'])
@@ -457,31 +437,30 @@ def showMenu(restaurant_id):
 @app.route('/restaurant/<int:restaurant_id>/menu/new/', methods=['GET', 'POST'])
 def newMenuItem(restaurant_id):
 
-    if 'email' not in login_session:
-        print "There is no one logged"
-        return redirect('/login')
+	if 'email' not in login_session:
+		print "There is no one logged"
+		return redirect('/login')
 
-    restaurant = session.query(Restaurant).filter_by(id=restaurant_id).one()
+	restaurant = session.query(Restaurant).filter_by(id=restaurant_id).one()
 
-    if login_session['user_id'] != restaurant.user_id:
-        return "<script>function myFunction() {alert('You are not authorized to add menu items to this restaurant. Please create your own restaurant in order to add items.');}</script><body onload='myFunction()''>"
+	if login_session['user_id'] != restaurant.user_id:
+		return "<script>function myFunction() {alert('You are not authorized to add menu items to this restaurant. Please create your own restaurant in order to add items.');}</script><body onload='myFunction()''>"
 
-    if request.method == 'POST':
-        print "eu entrei"
-        my_new_menu_item = unicode(request.form['name'])
-        newItem = MenuItem(name=my_new_menu_item,
-            description=request.form['description'], 
-            price=request.form['price'], 
-            course=request.form['course'],
-            user_id=restaurant.user_id,
-            restaurant_id=restaurant_id)
-        session.add(newItem)
-        print "eu tentei"
-        session.commit()
-        flash('New Menu %s Item Successfully Created' % (newItem.name))
-        return redirect(url_for('showMenu', restaurant_id=restaurant_id))
-    else:
-        return render_template('newmenuitem.html', restaurant_id=restaurant_id)
+	if request.method == 'POST':
+		print "eu entrei"
+		newItem = MenuItem(name=unicode(request.form['name']),
+			description=unicode(request.form['description']), 
+			price=unicode(request.form['price']), 
+			course=unicode(request.form['course']),
+			user_id=restaurant.user_id,
+			restaurant_id=restaurant_id)
+		session.add(newItem)
+		print "eu tentei"
+		session.commit()
+		flash('New Menu %s Item Successfully Created' % (newItem.name))
+		return redirect(url_for('showMenu', restaurant_id=restaurant_id))
+	else:
+		return render_template('newmenuitem.html', restaurant_id=restaurant_id)
 
 # Edit a menu item
 @app.route('/restaurant/<int:restaurant_id>/menu/<int:menu_id>/edit', methods=['GET', 'POST'])
@@ -498,13 +477,13 @@ def editMenuItem(restaurant_id, menu_id):
 
     if request.method == 'POST':
         if request.form['name']:
-            editedItem.name = unicode(request.form['name'])
+            editedItem.name = request.form['name']
         if request.form['description']:
-            editedItem.description = unicode(request.form['description']
+            editedItem.description = request.form['description']
         if request.form['price']:
-            editedItem.price = unicode(request.form['price']) #TODO - Deve se verificar se é numero somente e alertar caso nao seja
+            editedItem.price = request.form['price']
         if request.form['course']:
-            editedItem.course = unicode(request.form['course'])
+            editedItem.course = request.form['course']
         session.add(editedItem)
         session.commit()
         flash('Menu Item Successfully Edited')
