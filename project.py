@@ -373,7 +373,7 @@ def editRestaurant(restaurant_id):
 
     if request.method == 'POST':
         if request.form['name']:
-            editedRestaurant.name = request.form['name']
+            editedRestaurant.name = unicode(request.form['name'])
             session.add(editedRestaurant)
             session.commit()
             flash('Restaurant Successfully Edited %s' % editedRestaurant.name)
@@ -468,7 +468,8 @@ def newMenuItem(restaurant_id):
 
     if request.method == 'POST':
         print "eu entrei"
-        newItem = MenuItem(name=request.form['name'],
+        my_new_menu_item = unicode(request.form['name'])
+        newItem = MenuItem(name=my_new_menu_item,
             description=request.form['description'], 
             price=request.form['price'], 
             course=request.form['course'],
@@ -497,13 +498,13 @@ def editMenuItem(restaurant_id, menu_id):
 
     if request.method == 'POST':
         if request.form['name']:
-            editedItem.name = request.form['name']
+            editedItem.name = unicode(request.form['name'])
         if request.form['description']:
-            editedItem.description = request.form['description']
+            editedItem.description = unicode(request.form['description']
         if request.form['price']:
-            editedItem.price = request.form['price']
+            editedItem.price = unicode(request.form['price']) #TODO - Deve se verificar se é numero somente e alertar caso nao seja
         if request.form['course']:
-            editedItem.course = request.form['course']
+            editedItem.course = unicode(request.form['course'])
         session.add(editedItem)
         session.commit()
         flash('Menu Item Successfully Edited')
