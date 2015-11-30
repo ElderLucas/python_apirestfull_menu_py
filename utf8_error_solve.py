@@ -23,8 +23,10 @@ sys.setdefaultencoding("utf-8")
 
 app = Flask(__name__)
 
+DBpath = "mysql://root:oigalera8458@localhost/restaurant_utf8"
+
 # Connect to Database and create database session
-engine = create_engine('mysql://root:oigalera8458@localhost/restaurant')
+engine = create_engine(DBpath)
 Base.metadata.bind = engine
 DBSession = sessionmaker(bind=engine)
 session = DBSession()
