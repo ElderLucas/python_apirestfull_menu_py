@@ -38,9 +38,9 @@ os.chdir(app_path)
 
 print "Pão de Quijo \n"
 
-newRestaurant = Restaurant(name='AÁáPOIUYTW´®çµ√ˆƒøßπœ∑´ˆççˆµ˜∫√aass', user_id = 2)
-session.add(newRestaurant)
-session.commit()
+#newRestaurant = Restaurant(name=u'AÁáPOIUYTW´®çµ√ˆƒøßπœ∑´ˆççˆµ˜∫√aass', user_id = 2)
+#session.add(newRestaurant)
+#session.commit()
 
 print "Ok, DONE"
 
@@ -65,7 +65,7 @@ def debug():
 
 	return render_template('teste_utf8.html', list=a)
 
-if __name__ == '__main__':
-    app.secret_key = 'super_secret_key'
-    #app.debug = True
-    app.run(host='0.0.0.0', port=5000)
+#if __name__ == '__main__':
+#    app.secret_key = 'super_secret_key'
+#    #app.debug = True
+#    app.run(host='0.0.0.0', port=5000)
