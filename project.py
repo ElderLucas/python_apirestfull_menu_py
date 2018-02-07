@@ -21,7 +21,7 @@ import sys
 reload(sys)
 sys.setdefaultencoding("utf-8")
 
-DBpath = "mysql://root:oigalera8458@localhost/restaurant_utf8"
+DBpath = "mysql://root:o********8@localhost/restaurant_utf8"
 
 app = Flask(__name__)
 
